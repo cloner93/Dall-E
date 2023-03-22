@@ -15,4 +15,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Dall-E"
 include(":androidApp")
+include(":desktop")
 include(":shared")
