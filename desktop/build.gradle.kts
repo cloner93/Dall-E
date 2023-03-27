@@ -1,6 +1,3 @@
-import org.jetbrains.compose.compose
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
@@ -36,16 +33,5 @@ kotlin {
 compose.desktop {
     application {
         mainClass = "MainKt"
-        nativeDistributions {
-            targetFormats(
-                TargetFormat.Dmg,
-                TargetFormat.Msi,
-                TargetFormat.Deb
-            )
-            packageName = "com.milad.dall_e.desktop"
-            macOS {
-                bundleID = "com.domain.project"
-            }
-        }
     }
 }

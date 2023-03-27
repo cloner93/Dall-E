@@ -9,7 +9,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
-import com.milad.dall_e.search.SearchScreen
+import ui.SearchScreen
 import java.awt.Dimension
 import java.awt.Toolkit
 

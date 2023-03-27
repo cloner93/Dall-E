@@ -1,12 +1,18 @@
-package com.milad.dall_e.search
+package ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSizeIn
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
+import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
@@ -16,11 +22,17 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.milad.dall_e.network.model.Data
+import utils.AsyncImage
+import utils.loadImageBitmap
 
 @Composable
 fun SearchScreen() {
@@ -31,6 +43,7 @@ fun SearchScreen() {
 private fun SearchScreenContent(modifier: Modifier = Modifier) {
     Column(modifier.padding(8.dp)) {
         SearchBar()
+        ImageList()
     }
 }
 
@@ -56,10 +69,35 @@ private fun SearchBar() {
             trailingIcon = { Icon(imageVector = Icons.Default.Edit, contentDescription = null) }
         )
         Button(
-            {}, modifier = Modifier
-                .requiredSizeIn(minWidth = 80.dp,maxWidth = 120.dp)
+            {},
+            modifier = Modifier
+                .requiredSizeIn(minWidth = 80.dp, maxWidth = 120.dp)
                 .weight(1f)
         ) { Text("Generate", fontSize = 15.sp) }
+    }
+}
+
+@Composable
+private fun ImageList(list: List<Data> = listOf()) {
+    Box {
+        LazyColumn {
+            items(list) { item ->
+                ListItem(item)
+            }
+        }
+    }
+}
+
+@Composable
+private fun ListItem(item: Data) {
+    Card(modifier = Modifier.fillMaxWidth().height(300.dp)) {
+         AsyncImage(
+             modifier = Modifier.fillMaxSize(),
+             load = { loadImageBitmap(item.url) },
+             painterFor = { remember { BitmapPainter(it) } },
+             contentDescription = "Cast",
+             contentScale = ContentScale.Crop
+         )
     }
 }
 

@@ -1,5 +1,6 @@
 package com.milad.dall_e.network
 
+import com.milad.dall_e.BuildKonfig
 import com.milad.dall_e.network.model.GeneratedImage
 import com.milad.dall_e.network.model.RequestBody
 import io.ktor.client.HttpClient
@@ -49,7 +50,7 @@ class DallEApiImpl : DallEApi {
             headers {
                 append(
                     HttpHeaders.Authorization,
-                    "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" // TODO set token
+                    BuildKonfig.OPEN_AI_KEY
                 )
             }
         }

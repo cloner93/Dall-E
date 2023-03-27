@@ -1,7 +1,11 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
     id("org.jetbrains.compose")
+    id("com.codingfeline.buildkonfig")
 }
 val ktorVersion = "2.2.4"
 
@@ -53,5 +57,15 @@ android {
     defaultConfig {
         minSdk = 24
         targetSdk = 33
+    }
+}
+
+buildkonfig {
+    packageName = "com.milad.dall_e"
+    defaultConfigs{
+        buildConfigField(
+            STRING,"OPEN_AI_KEY",
+            gradleLocalProperties(rootDir).getProperty("OPEN_AI_KEY") ?: ""
+        )
     }
 }
