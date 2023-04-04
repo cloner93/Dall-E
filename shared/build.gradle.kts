@@ -8,6 +8,7 @@ plugins {
     id("com.codingfeline.buildkonfig")
 }
 val ktorVersion = "2.2.4"
+val mokoMvvmVersion = "0.13.0"
 
 kotlin {
     android {
@@ -38,7 +39,12 @@ kotlin {
                 implementation("io.ktor:ktor-client-serialization:$ktorVersion")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
                 implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
+
+                api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+
+                api("dev.icerock.moko:mvvm-core:$mokoMvvmVersion")
+                api("dev.icerock.moko:mvvm-flow:$mokoMvvmVersion")
             }
         }
         val commonTest by getting {
@@ -46,7 +52,11 @@ kotlin {
                 implementation(kotlin("test"))
             }
         }
-        val androidMain by getting
+        val androidMain by getting{
+            dependencies {
+                api("dev.icerock.moko:mvvm-flow-compose:$mokoMvvmVersion")
+            }
+        }
         val androidUnitTest by getting
     }
 }

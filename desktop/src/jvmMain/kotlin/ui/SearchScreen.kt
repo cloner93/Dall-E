@@ -20,6 +20,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,25 +31,40 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.milad.dall_e.SearchViewModel
+import com.milad.dall_e.network.DallEApiImpl
 import com.milad.dall_e.network.model.Data
 import utils.AsyncImage
 import utils.loadImageBitmap
 
 @Composable
 fun SearchScreen() {
-    Scaffold() { SearchScreenContent() }
-}
+    val viewModel = SearchViewModel(DallEApiImpl())
 
-@Composable
-private fun SearchScreenContent(modifier: Modifier = Modifier) {
-    Column(modifier.padding(8.dp)) {
-        SearchBar()
-        ImageList()
+    val imageList = viewModel.generatedImages.collectAsState().value
+
+    Scaffold() {
+        SearchScreenContent(
+            onclick = { viewModel.generateImage(it) },
+            imageList = imageList ?: listOf()
+        )
     }
 }
 
 @Composable
-private fun SearchBar() {
+private fun SearchScreenContent(
+    modifier: Modifier = Modifier,
+    onclick: (String) -> Unit,
+    imageList: List<Data>
+) {
+    Column(modifier.padding(8.dp)) {
+        SearchBar(onClick = onclick)
+        ImageList(list = imageList)
+    }
+}
+
+@Composable
+private fun SearchBar(onClick: (String) -> Unit) {
     var text by rememberSaveable { mutableStateOf("") }
 
     Row(
@@ -69,7 +85,7 @@ private fun SearchBar() {
             trailingIcon = { Icon(imageVector = Icons.Default.Edit, contentDescription = null) }
         )
         Button(
-            {},
+            { onClick.invoke(text) },
             modifier = Modifier
                 .requiredSizeIn(minWidth = 80.dp, maxWidth = 120.dp)
                 .weight(1f)
@@ -87,17 +103,23 @@ private fun ImageList(list: List<Data> = listOf()) {
         }
     }
 }
+/*
+* TODO
+* implement ui in android platform
+* create viewModels
+* networks
+*/
 
 @Composable
 private fun ListItem(item: Data) {
     Card(modifier = Modifier.fillMaxWidth().height(300.dp)) {
-         AsyncImage(
-             modifier = Modifier.fillMaxSize(),
-             load = { loadImageBitmap(item.url) },
-             painterFor = { remember { BitmapPainter(it) } },
-             contentDescription = "Cast",
-             contentScale = ContentScale.Crop
-         )
+        AsyncImage(
+            modifier = Modifier.fillMaxSize(),
+            load = { loadImageBitmap(item.url) },
+            painterFor = { remember { BitmapPainter(it) } },
+            contentDescription = "Cast",
+            contentScale = ContentScale.Crop
+        )
     }
 }
 
