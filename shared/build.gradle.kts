@@ -3,6 +3,7 @@ import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 
 plugins {
     kotlin("multiplatform")
+    kotlin("plugin.serialization") version "1.4.10"
     id("com.android.library")
     id("org.jetbrains.compose")
     id("com.codingfeline.buildkonfig")
@@ -34,11 +35,10 @@ kotlin {
                 implementation(compose.runtime)
 
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
-                implementation("io.ktor:ktor-client-json:$ktorVersion")
+                implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
                 implementation("io.ktor:ktor-client-logging:$ktorVersion")
-                implementation("io.ktor:ktor-client-serialization:$ktorVersion")
-                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
                 implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
 
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")

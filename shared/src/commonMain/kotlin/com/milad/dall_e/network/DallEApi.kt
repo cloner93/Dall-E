@@ -9,12 +9,16 @@ import io.ktor.client.call.body
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.RedirectResponseException
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.get
 import io.ktor.client.request.headers
+import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
-import io.ktor.http.encodedPath
+import io.ktor.http.contentType
 import io.ktor.http.takeFrom
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.flow.Flow
@@ -27,10 +31,11 @@ interface DallEApi {
 class DallEApiImpl : DallEApi {
     override suspend fun generateImage(body: RequestBody): Flow<Result<List<Data>>> {
         return safeApiCall {
-           val res = client.get {
+            val res = client.post {
                 headers {
                     openAIEndPoint("images/generations")
                 }
+                contentType(ContentType.Application.Json)
                 setBody(body)
             }.body<GeneratedImage>()
 
@@ -49,20 +54,29 @@ class DallEApiImpl : DallEApi {
         install(ContentNegotiation) {
             json()
         }
+        install(Logging){
+            logger = CustomHttpLogger()
+            level = LogLevel.ALL
+        }
+    }
+
+    class CustomHttpLogger : Logger {
+        override fun log(message: String) {
+            print(message) // Or whatever logging system you want here
+        }
     }
 
     private fun HttpRequestBuilder.openAIEndPoint(path: String) {
         url {
-            takeFrom("https://api.openai.com/v1/")
-            encodedPath = path
+            takeFrom("https://api.openai.com/v1/images/generations")
+//            encodedPath = path
             headers {
                 append(
                     HttpHeaders.Authorization,
-                    BuildKonfig.OPEN_AI_KEY
+                    "Bearer "+BuildKonfig.OPEN_AI_KEY
                 )
             }
         }
-
     }
 }
 

@@ -18,11 +18,11 @@ class SearchViewModel constructor(private val network: DallEApiImpl) : ViewModel
     val error get() = _error.asStateFlow()
 
     fun generateImage(s: String) {
-        val body = RequestBody(1, s, "256×256")
-        viewModelScope.launch(Dispatchers.Default) {
+        val body = RequestBody(1, s, "256x256")
+        viewModelScope.launch {
             network.generateImage(body).collect { result ->
                 result.onSuccess {
-                    _generatedImages.value=it
+                    _generatedImages.value = it
                 }.onFailure {
                     _error.value = it.message
                 }
