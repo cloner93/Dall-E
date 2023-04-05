@@ -7,6 +7,7 @@ import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 class SearchViewModel constructor(private val network: DallEApiImpl) : ViewModel() {
@@ -15,8 +16,10 @@ class SearchViewModel constructor(private val network: DallEApiImpl) : ViewModel
     val generatedImages get() = _generatedImages.asStateFlow()
 
     fun generateImage(body: RequestBody) {
-        viewModelScope.launch (Dispatchers.IO){
-            network.generateImage(body).collect { result ->
+        viewModelScope.launch(Dispatchers.IO) {
+            network.generateImage(body).catch {
+                _generatedImages.value = SearchState.Error(it)
+            }.collect { result ->
                 result.onSuccess {
                     _generatedImages.value = SearchState.Success(it)
                 }.onFailure {
