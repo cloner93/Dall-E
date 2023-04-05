@@ -6,9 +6,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSizeIn
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
@@ -20,9 +20,9 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -31,9 +31,12 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.milad.dall_e.ImageSize
+import com.milad.dall_e.SearchState
 import com.milad.dall_e.SearchViewModel
 import com.milad.dall_e.network.DallEApiImpl
 import com.milad.dall_e.network.model.Data
+import com.milad.dall_e.network.model.RequestBody
 import utils.AsyncImage
 import utils.loadImageBitmap
 
@@ -41,12 +44,20 @@ import utils.loadImageBitmap
 fun SearchScreen() {
     val viewModel = SearchViewModel(DallEApiImpl())
 
-    val imageList = viewModel.generatedImages.collectAsState().value
+    val state by produceState<SearchState>(initialValue = SearchState.Loading){
+        viewModel.generatedImages.collect{
+            value = it
+        }
+    }
 
-    Scaffold() {
+    Scaffold {
         SearchScreenContent(
-            onclick = { viewModel.generateImage(it) },
-            imageList = imageList ?: listOf()
+            onclick = {
+                val body = RequestBody(5, it, ImageSize.X256.value) // TODO:user can change another value
+
+                viewModel.generateImage(body)
+            },
+            state = state
         )
     }
 }
@@ -55,11 +66,21 @@ fun SearchScreen() {
 private fun SearchScreenContent(
     modifier: Modifier = Modifier,
     onclick: (String) -> Unit,
-    imageList: List<Data>
+    state: SearchState
 ) {
     Column(modifier.padding(8.dp)) {
         SearchBar(onClick = onclick)
-        ImageList(list = imageList)
+        when(state){
+            is SearchState.Loading->{
+                // TODO:
+            }
+            is SearchState.Error->{
+                // TODO:
+            }
+            is SearchState.Success->{
+                ImageList(list = state.data)
+            }
+        }
     }
 }
 
@@ -112,7 +133,7 @@ private fun ImageList(list: List<Data> = listOf()) {
 
 @Composable
 private fun ListItem(item: Data) {
-    Card(modifier = Modifier.fillMaxWidth().height(300.dp)) {
+    Card(modifier = Modifier.fillMaxWidth().size(200.dp)) {
         AsyncImage(
             modifier = Modifier.fillMaxSize(),
             load = { loadImageBitmap(item.url) },
