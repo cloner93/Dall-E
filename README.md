@@ -1,7 +1,5 @@
 # DALL-E Project
 
-![DALL-E](dall_e_image.png)
-
 This project is designed for creative image synthesis using advanced deep learning techniques and Generative Adversarial Networks (GANs). DALL-E is capable of generating novel and imaginative images based on textual descriptions. Leveraging cutting-edge natural language processing algorithms, DALL-E achieves remarkable creativity that users can benefit from.
 
 ## Features
